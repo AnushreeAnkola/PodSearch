@@ -1,0 +1,10 @@
+[00:00] Welcome to the AI Engineering podcast. Today we're talking about retrieval augmented generation, or RAG.
+[00:15] RAG is a technique where you retrieve relevant documents from a knowledge base and feed them into a language model to generate answers.
+[00:32] The key insight is that language models are great at reasoning but they can hallucinate facts. By grounding them in real data, you get much better results.
+[01:05] Let's talk about embeddings. An embedding is a vector representation of text that captures its semantic meaning.
+[01:22] When you embed a query and your documents into the same vector space, you can find the most relevant documents using cosine similarity.
+[02:01] Chunking is another important concept. You don't want to embed entire documents because they're too long. Instead, you split them into smaller chunks.
+[02:18] There are different chunking strategies: fixed-size, sentence-based, and semantic chunking. Each has trade-offs.
+[03:02] The retrieval step is crucial. If you retrieve the wrong chunks, your language model will generate incorrect answers.
+[03:25] That's why hybrid search, combining dense vector search with sparse keyword search, often works better than either alone.
+[04:00] Thanks for listening to the AI Engineering podcast. See you next time.
