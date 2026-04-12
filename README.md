@@ -49,5 +49,3 @@ Semantic podcast search using RAG and embeddings. Find episodes by content, not 
    ```json
    {"message": "Hello World"}
    ```
-
-   Interactive API docs are available at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
