@@ -12,6 +12,10 @@ def build_embedding_provider(settings: Settings) -> EmbeddingProvider:
             api_key=settings.openai_api_key,
             model=settings.embedding_model,
         )
+    if settings.embedding_provider == "local":
+        from backend.app.providers.embeddings.local import LocalEmbeddingProvider
+
+        return LocalEmbeddingProvider(model=settings.embedding_model)
     raise ValueError(f"Unknown embedding provider: {settings.embedding_provider}")
 
 

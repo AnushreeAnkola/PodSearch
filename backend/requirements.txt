@@ -8,6 +8,7 @@ chromadb==0.4.22
 python-dotenv==1.0.0
 structlog==23.2.0
 pyyaml==6.0.1
+sentence-transformers>=2.7,<3
 pytest==7.4.3
 pytest-asyncio==0.23.2
 httpx==0.28.1

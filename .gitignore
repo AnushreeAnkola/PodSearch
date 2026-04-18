@@ -225,3 +225,6 @@ data/chroma_db/
 .vscode/
 .idea/
 *.swp
+
+# Local dev helpers
+ask.sh
