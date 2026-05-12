@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends
 
-from backend.app.api.deps import get_embedder, get_store
+from backend.app.api.deps import get_bm25, get_embedder, get_store
 from backend.app.models.api import IngestRequest, IngestResponse
 from backend.app.providers.embeddings.base import EmbeddingProvider
 from backend.app.providers.vector_store.base import VectorStore
 from backend.app.services.ingestion import ingest_text
+from backend.app.services.retrieval.bm25 import BM25Retriever
 
 router = APIRouter(tags=["ingest"])
 
@@ -14,11 +15,13 @@ async def ingest(
     body: IngestRequest,
     embedder: EmbeddingProvider = Depends(get_embedder),
     store: VectorStore = Depends(get_store),
+    bm25: BM25Retriever = Depends(get_bm25),
 ):
     chunks = await ingest_text(
         episode_id=body.episode_id,
         raw_text=body.text,
         embedder=embedder,
         store=store,
+        bm25=bm25,
     )
     return IngestResponse(episode_id=body.episode_id, chunks_created=len(chunks))

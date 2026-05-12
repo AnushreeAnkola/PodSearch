@@ -21,11 +21,13 @@ class FakeEmbeddingProvider(EmbeddingProvider):
 class FakeVectorStore(VectorStore):
     def __init__(self, results: list[RetrievalResult]) -> None:
         self._results = results
+        self.last_filters: dict | None = None
 
     async def upsert(self, chunks, embeddings) -> None:
         pass
 
-    async def query(self, embedding, top_k=5) -> list[RetrievalResult]:
+    async def query(self, embedding, top_k=5, filters=None) -> list[RetrievalResult]:
+        self.last_filters = filters
         return self._results[:top_k]
 
     async def count(self) -> int:
@@ -33,6 +35,9 @@ class FakeVectorStore(VectorStore):
 
     async def delete(self, chunk_ids) -> None:
         pass
+
+    async def fetch_all(self):
+        return [r.chunk for r in self._results]
 
 
 @pytest.mark.asyncio

@@ -1,6 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
-from backend.app.api.deps import get_app_settings, get_llm, get_retriever
+from backend.app.api.deps import (
+    get_app_settings,
+    get_llm,
+    get_retrievers,
+)
 from backend.app.core.config import Settings
 from backend.app.core.telemetry import track_latency
 from backend.app.models.api import CitationResponse, SearchRequest, SearchResponse
@@ -14,12 +18,19 @@ router = APIRouter(tags=["search"])
 @router.post("/search", response_model=SearchResponse)
 async def search(
     body: SearchRequest,
-    retriever: Retriever = Depends(get_retriever),
+    retrievers: dict[str, Retriever] = Depends(get_retrievers),
     llm: LLMProvider = Depends(get_llm),
     settings: Settings = Depends(get_app_settings),
 ):
+    mode = body.retriever_mode or settings.retriever_mode
+    retriever = retrievers.get(mode)
+    if retriever is None:
+        raise HTTPException(status_code=400, detail=f"Unknown retriever mode: {mode}")
+
     with track_latency("search_total"):
-        results = await retriever.retrieve(body.query, top_k=body.top_k)
+        results = await retriever.retrieve(
+            body.query, top_k=body.top_k, filters=body.filters
+        )
         answer = await generate_answer(
             query=body.query,
             results=results,

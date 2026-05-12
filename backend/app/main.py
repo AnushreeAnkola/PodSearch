@@ -10,6 +10,8 @@ from backend.app.providers.factory import (
     build_llm_provider,
     build_vector_store,
 )
+from backend.app.services.retrieval.bm25 import BM25Retriever
+from backend.app.services.retrieval.hybrid import HybridRetriever
 from backend.app.services.retrieval.semantic import SemanticRetriever
 
 log = get_logger(__name__)
@@ -26,9 +28,20 @@ async def lifespan(app: FastAPI):
     app.state.embedder = build_embedding_provider(settings)
     app.state.store = build_vector_store(settings)
     app.state.llm = build_llm_provider(settings)
-    app.state.retriever = SemanticRetriever(app.state.embedder, app.state.store)
 
-    log.info("providers_ready")
+    existing_chunks = await app.state.store.fetch_all()
+    semantic = SemanticRetriever(app.state.embedder, app.state.store)
+    bm25 = BM25Retriever(existing_chunks)
+    hybrid = HybridRetriever(semantic, bm25, k_rrf=settings.rrf_k)
+
+    app.state.bm25 = bm25
+    app.state.retrievers = {
+        "semantic": semantic,
+        "bm25": bm25,
+        "hybrid": hybrid,
+    }
+
+    log.info("providers_ready", indexed_chunks=len(existing_chunks))
     yield
     log.info("shutdown")
 

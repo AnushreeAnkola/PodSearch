@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Literal
 
 from pydantic_settings import BaseSettings
 
@@ -28,6 +29,8 @@ class Settings(BaseSettings):
 
     # Retrieval
     top_k: int = 5
+    retriever_mode: Literal["semantic", "bm25", "hybrid"] = "hybrid"
+    rrf_k: int = 60
 
 
 @lru_cache

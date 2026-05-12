@@ -4,6 +4,33 @@ from backend.app.models.domain import Chunk, RetrievalResult
 from backend.app.providers.vector_store.base import VectorStore
 
 
+_RANGE_OPS = {
+    "gt": "$gt",
+    "gte": "$gte",
+    "lt": "$lt",
+    "lte": "$lte",
+    "ne": "$ne",
+}
+
+
+def _to_chroma_where(filters: dict | None) -> dict | None:
+    if not filters:
+        return None
+    clauses: list[dict] = []
+    for key, value in filters.items():
+        if "__" in key:
+            field, op = key.rsplit("__", 1)
+            chroma_op = _RANGE_OPS.get(op)
+            if chroma_op is None:
+                raise ValueError(f"Unsupported filter operator: {op}")
+            clauses.append({field: {chroma_op: value}})
+        else:
+            clauses.append({key: {"$eq": value}})
+    if len(clauses) == 1:
+        return clauses[0]
+    return {"$and": clauses}
+
+
 class ChromaVectorStore(VectorStore):
     def __init__(self, persist_dir: str, collection_name: str) -> None:
         self._client = chromadb.PersistentClient(path=persist_dir)
@@ -30,13 +57,20 @@ class ChromaVectorStore(VectorStore):
         )
 
     async def query(
-        self, embedding: list[float], top_k: int = 5
+        self,
+        embedding: list[float],
+        top_k: int = 5,
+        filters: dict | None = None,
     ) -> list[RetrievalResult]:
-        results = self._collection.query(
-            query_embeddings=[embedding],
-            n_results=top_k,
-            include=["documents", "metadatas", "distances"],
-        )
+        where = _to_chroma_where(filters)
+        kwargs = {
+            "query_embeddings": [embedding],
+            "n_results": top_k,
+            "include": ["documents", "metadatas", "distances"],
+        }
+        if where is not None:
+            kwargs["where"] = where
+        results = self._collection.query(**kwargs)
 
         retrieval_results: list[RetrievalResult] = []
         if not results["ids"] or not results["ids"][0]:
@@ -62,3 +96,21 @@ class ChromaVectorStore(VectorStore):
 
     async def delete(self, chunk_ids: list[str]) -> None:
         self._collection.delete(ids=chunk_ids)
+
+    async def fetch_all(self) -> list[Chunk]:
+        results = self._collection.get(include=["documents", "metadatas"])
+        chunks: list[Chunk] = []
+        ids = results.get("ids") or []
+        documents = results.get("documents") or []
+        metadatas = results.get("metadatas") or []
+        for chunk_id, text, meta in zip(ids, documents, metadatas):
+            chunks.append(
+                Chunk(
+                    chunk_id=chunk_id,
+                    text=text,
+                    episode_id=meta["episode_id"],
+                    start_seconds=meta["start_seconds"],
+                    end_seconds=meta["end_seconds"],
+                )
+            )
+        return chunks

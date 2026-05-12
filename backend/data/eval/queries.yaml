@@ -1,0 +1,73 @@
+# Hand-labeled eval queries against backend/data/transcripts/episode_001.txt.
+# chunk_id format: {episode_id}_chunk_{i:04d} where i is the 0-indexed line number.
+# Lines 0..9 of ep_001:
+#   0000 welcome / RAG intro
+#   0001 RAG definition (retrieve docs + feed to LM)
+#   0002 LMs hallucinate; grounding helps
+#   0003 embeddings = vector representations
+#   0004 cosine similarity in shared vector space
+#   0005 chunking concept (split docs)
+#   0006 chunking strategies (fixed, sentence, semantic)
+#   0007 retrieval is crucial; bad chunks → bad answers
+#   0008 hybrid search (dense + sparse)
+#   0009 sign-off
+
+- query: "what is RAG?"
+  relevant_chunk_ids: [episode_001_chunk_0000, episode_001_chunk_0001]
+  best_chunk_id: episode_001_chunk_0001
+
+- query: "what does retrieval augmented generation mean"
+  relevant_chunk_ids: [episode_001_chunk_0001, episode_001_chunk_0000]
+  best_chunk_id: episode_001_chunk_0001
+
+- query: "why do language models hallucinate"
+  relevant_chunk_ids: [episode_001_chunk_0002]
+  best_chunk_id: episode_001_chunk_0002
+
+- query: "how does grounding LLMs in real data help"
+  relevant_chunk_ids: [episode_001_chunk_0002]
+  best_chunk_id: episode_001_chunk_0002
+
+- query: "what is an embedding"
+  relevant_chunk_ids: [episode_001_chunk_0003, episode_001_chunk_0004]
+  best_chunk_id: episode_001_chunk_0003
+
+- query: "vector representations of text"
+  relevant_chunk_ids: [episode_001_chunk_0003]
+  best_chunk_id: episode_001_chunk_0003
+
+- query: "cosine similarity"
+  relevant_chunk_ids: [episode_001_chunk_0004]
+  best_chunk_id: episode_001_chunk_0004
+
+- query: "how do you find relevant documents in a vector space"
+  relevant_chunk_ids: [episode_001_chunk_0004]
+  best_chunk_id: episode_001_chunk_0004
+
+- query: "why split documents into chunks"
+  relevant_chunk_ids: [episode_001_chunk_0005]
+  best_chunk_id: episode_001_chunk_0005
+
+- query: "chunking strategies"
+  relevant_chunk_ids: [episode_001_chunk_0006, episode_001_chunk_0005]
+  best_chunk_id: episode_001_chunk_0006
+
+- query: "fixed-size vs semantic chunking"
+  relevant_chunk_ids: [episode_001_chunk_0006]
+  best_chunk_id: episode_001_chunk_0006
+
+- query: "what happens if you retrieve the wrong chunks"
+  relevant_chunk_ids: [episode_001_chunk_0007]
+  best_chunk_id: episode_001_chunk_0007
+
+- query: "hybrid search"
+  relevant_chunk_ids: [episode_001_chunk_0008]
+  best_chunk_id: episode_001_chunk_0008
+
+- query: "dense vector search combined with sparse keyword search"
+  relevant_chunk_ids: [episode_001_chunk_0008]
+  best_chunk_id: episode_001_chunk_0008
+
+- query: "BM25 and vector search together"
+  relevant_chunk_ids: [episode_001_chunk_0008]
+  best_chunk_id: episode_001_chunk_0008

@@ -1,10 +1,13 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
 class SearchRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=1000)
     top_k: int = Field(default=5, ge=1, le=50)
-    episode_id: str | None = None
+    filters: dict | None = None
+    retriever_mode: Literal["semantic", "bm25", "hybrid"] | None = None
 
 
 class CitationResponse(BaseModel):

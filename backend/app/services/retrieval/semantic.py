@@ -9,6 +9,13 @@ class SemanticRetriever(Retriever):
         self._embedder = embedder
         self._store = store
 
-    async def retrieve(self, query: str, top_k: int = 5) -> list[RetrievalResult]:
+    async def retrieve(
+        self,
+        query: str,
+        top_k: int = 5,
+        filters: dict | None = None,
+    ) -> list[RetrievalResult]:
         query_embedding = await self._embedder.embed_query(query)
-        return await self._store.query(query_embedding, top_k=top_k)
+        return await self._store.query(
+            query_embedding, top_k=top_k, filters=filters
+        )
