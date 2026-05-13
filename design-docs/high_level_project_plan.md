@@ -391,3 +391,7 @@ Everything that turns the working demo into something you'd put in front of real
 - **Integration tests** spin up the app on a tmp Chroma dir with a 2-episode fixture corpus.
 - **Eval script** (`run_eval.py`) is the source of truth for retrieval and answer quality. Run it at the end of every phase from Phase 2 onward; record numbers in a README "Eval history" section. Never ship a phase where metrics regress without explanation.
 - **Manual browser demo** (Phase 4+) on three queries: one clear semantic win, one clear keyword win, one ambiguous — sanity check that the frontend tells the story.
+
+## What is done:
+1. Phase 1
+2. Phase 2
